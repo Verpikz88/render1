@@ -19,7 +19,7 @@ app.get('/verify', async (req, res) => {
 
   // Send to your bot backend (adjust ngrok URL below)
   try {
-    await axios.post('https://fd11-162-225-200-51.ngrok-free.app/api/verified', {
+    await axios.post('https://7895-162-225-200-51.ngrok-free.app/api/verified', {
       userId,
       ip
     });
