@@ -1,19 +1,33 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
+const axios = require('axios'); // Add this
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.get('/verify', (req, res) => {
+app.use(express.json());
+
+app.get('/verify', async (req, res) => {
   const userId = req.query.user;
   const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
 
   if (!userId) return res.status(400).send('Missing user ID');
 
-  // Log IPs to file (or send to DB or bot)
+  // Log to file
   const logEntry = `[${new Date().toISOString()}] User: ${userId}, IP: ${ip}\n`;
   fs.appendFileSync(path.join(__dirname, 'ip-log.txt'), logEntry);
 
+  // Send to your bot backend (adjust ngrok URL below)
+  try {
+    await axios.post('https://fd11-162-225-200-51.ngrok-free.app/api/verified', {
+      userId,
+      ip
+    });
+  } catch (err) {
+    console.error('Failed to notify bot:', err.message);
+  }
+
+  // Response
   res.send(`
     <html>
     <head><title>Verification</title></head>
